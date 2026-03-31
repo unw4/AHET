@@ -32,16 +32,17 @@
    - [API Endpoint Summary](#51-api-endpoint-summary)
    - [RBAC Role Matrix](#52-rbac-role-matrix)
 6. [Frontend Layer](#6-frontend-layer)
-7. [Design System](#7-design-system)
-8. [Setup & Installation](#8-setup--installation)
-   - [Prerequisites](#81-prerequisites)
-   - [Hardware Setup](#82-hardware-setup)
-   - [Backend Setup](#83-backend-setup)
-   - [Web Panel Setup](#84-web-panel-setup)
-   - [Mobile App Setup](#85-mobile-app-setup)
-9. [Environment Variables](#9-environment-variables)
-10. [Contributing](#10-contributing)
-11. [License](#11-license)
+7. [WhatsApp Integration](#7-whatsapp-integration)
+8. [Design System](#8-design-system)
+9. [Setup & Installation](#9-setup--installation)
+   - [Prerequisites](#91-prerequisites)
+   - [Hardware Setup](#92-hardware-setup)
+   - [Backend Setup](#93-backend-setup)
+   - [Web Panel Setup](#94-web-panel-setup)
+   - [Mobile App Setup](#95-mobile-app-setup)
+10. [Environment Variables](#10-environment-variables)
+11. [Contributing](#11-contributing)
+12. [License](#12-license)
 
 ---
 
@@ -388,7 +389,86 @@ Built with **React Native** or **Flutter**. Key screens:
 
 ---
 
-## 7. Design System
+## 7. WhatsApp Integration
+
+AH@ integrates with the **Meta WhatsApp Business Cloud API** to deliver real-time alerts directly to staff WhatsApp accounts — no app installation required on the recipient's side.
+
+### Why WhatsApp alongside FCM?
+
+| Channel | Best For |
+|---------|---------|
+| FCM (Push) | In-app notifications for users who have the mobile app installed |
+| WhatsApp | Instant alerts to any phone number — managers, field staff, external contacts |
+
+### Notification Events Sent via WhatsApp
+
+| Event | Template | Recipients |
+|-------|---------|-----------|
+| DTC fault detected | `ahet_dtc_alert` | Manager, assigned Employee |
+| KM maintenance threshold reached | `ahet_km_threshold` | Manager |
+| Gas test approved | `ahet_test_approved` | Assigned Employee |
+| Gas test result ready | `ahet_test_result` | Manager |
+| Task assigned | `ahet_task_assigned` | Assigned Employee |
+
+### How It Works
+
+```
+Backend Event Triggered
+        │
+        ▼
+WhatsApp Service
+        │  Looks up user's registered WhatsApp phone number
+        │  Selects pre-approved Meta template
+        ▼
+Meta WhatsApp Cloud API
+  POST https://graph.facebook.com/v19.0/{phone_id}/messages
+        │
+        ▼
+User receives WhatsApp message on any device
+        │
+        ▼
+Delivery receipt webhook → POST /api/v1/whatsapp/webhook
+        │
+        ▼
+Status logged to whatsapp_message_log table
+```
+
+### Message Templates
+
+All templates must be approved in **Meta Business Manager** before use. Template language: `tr` (Turkish) — add `en` variants for international use.
+
+Example — DTC Alert (`ahet_dtc_alert`):
+```
+🔴 AH@ Araç Uyarısı
+
+Araç: {{1}}
+Hata Kodu: {{2}} — {{3}}
+Tarih: {{4}}
+
+Detaylar için web paneline giriş yapın.
+```
+
+### API Endpoints
+
+| Method | Endpoint | Description |
+|--------|---------|-------------|
+| `GET` | `/api/v1/whatsapp/webhook` | Meta webhook verification (hub.challenge) |
+| `POST` | `/api/v1/whatsapp/webhook` | Receive delivery receipts from Meta |
+| `POST` | `/api/v1/whatsapp/register` | Register user's WhatsApp phone number |
+
+### Setup
+
+1. Create a **Meta Business App** at [developers.facebook.com](https://developers.facebook.com)
+2. Add the **WhatsApp** product to your app
+3. Generate a **System User Token** with `whatsapp_business_messaging` permission
+4. Note your **Phone Number ID** and **WhatsApp Business Account ID**
+5. Register the webhook URL: `https://your-domain/api/v1/whatsapp/webhook`
+6. Submit message templates for approval in Meta Business Manager
+7. Add credentials to `.env` (see [Environment Variables](#10-environment-variables))
+
+---
+
+## 8. Design System
 
 AH@ enforces a **Brutalist** design language. This is non-negotiable.
 
@@ -528,6 +608,10 @@ Configure `src/services/api.ts` with your backend API base URL.
 | `DEVICE_API_KEY` | Shared API key used by ESP32 for bulk ingest | `esp32-device-key-xxxx` |
 | `SERVER_PORT` | HTTP server port | `8080` |
 | `ENVIRONMENT` | `development` or `production` | `development` |
+| `WHATSAPP_TOKEN` | Meta system user token with `whatsapp_business_messaging` permission | `EAAxxxxx...` |
+| `WHATSAPP_PHONE_ID` | WhatsApp Phone Number ID from Meta Business Manager | `123456789` |
+| `WHATSAPP_BUSINESS_ID` | WhatsApp Business Account ID | `987654321` |
+| `WHATSAPP_WEBHOOK_VERIFY_TOKEN` | Random secret for Meta webhook verification | `my-random-secret` |
 
 ---
 
@@ -571,16 +655,17 @@ This project is licensed under the **MIT License**. See the [LICENSE](LICENSE) f
    - [API Endpoint Özeti](#51-api-endpoint-özeti)
    - [RBAC Rol Matrisi](#52-rbac-rol-matrisi)
 6. [Frontend Katmanı](#6-frontend-katmanı)
-7. [Tasarım Sistemi](#7-tasarım-sistemi)
-8. [Kurulum ve Çalıştırma](#8-kurulum-ve-çalıştırma)
-   - [Ön Koşullar](#81-ön-koşullar)
-   - [Donanım Kurulumu](#82-donanım-kurulumu)
-   - [Backend Kurulumu](#83-backend-kurulumu)
-   - [Web Panel Kurulumu](#84-web-panel-kurulumu)
-   - [Mobil Uygulama Kurulumu](#85-mobil-uygulama-kurulumu)
-9. [Ortam Değişkenleri](#9-ortam-değişkenleri)
-10. [Katkıda Bulunma](#10-katkıda-bulunma)
-11. [Lisans](#11-lisans)
+7. [WhatsApp Entegrasyonu](#7-whatsapp-entegrasyonu)
+8. [Tasarım Sistemi](#8-tasarım-sistemi)
+9. [Kurulum ve Çalıştırma](#9-kurulum-ve-çalıştırma)
+   - [Ön Koşullar](#91-ön-koşullar)
+   - [Donanım Kurulumu](#92-donanım-kurulumu)
+   - [Backend Kurulumu](#93-backend-kurulumu)
+   - [Web Panel Kurulumu](#94-web-panel-kurulumu)
+   - [Mobil Uygulama Kurulumu](#95-mobil-uygulama-kurulumu)
+10. [Ortam Değişkenleri](#10-ortam-değişkenleri)
+11. [Katkıda Bulunma](#11-katkıda-bulunma)
+12. [Lisans](#12-lisans)
 
 ---
 
@@ -927,7 +1012,86 @@ Tüm endpoint'ler `/api/v1` ön eki ile başlar. Kimlik doğrulama Bearer JWT to
 
 ---
 
-## 7. Tasarım Sistemi
+## 7. WhatsApp Entegrasyonu
+
+AH@, **Meta WhatsApp Business Cloud API** ile entegre olarak gerçek zamanlı uyarıları doğrudan personelin WhatsApp hesaplarına iletir — alıcı tarafında herhangi bir uygulama kurulumu gerekmez.
+
+### Neden FCM'ye Ek Olarak WhatsApp?
+
+| Kanal | En İyi Kullanım |
+|-------|----------------|
+| FCM (Push) | Mobil uygulaması yüklü kullanıcılar için uygulama içi bildirimler |
+| WhatsApp | Herhangi bir telefon numarasına anlık uyarı — yöneticiler, saha personeli, dış kişiler |
+
+### WhatsApp Üzerinden Gönderilen Bildirim Olayları
+
+| Olay | Şablon | Alıcılar |
+|------|--------|---------|
+| DTC hata kodu tespit edildi | `ahet_dtc_alert` | Yönetici, atanmış Çalışan |
+| KM bakım eşiğine ulaşıldı | `ahet_km_threshold` | Yönetici |
+| Gaz testi onaylandı | `ahet_test_approved` | Atanmış Çalışan |
+| Gaz testi sonucu hazır | `ahet_test_result` | Yönetici |
+| Görev atandı | `ahet_task_assigned` | Atanmış Çalışan |
+
+### Nasıl Çalışır?
+
+```
+Backend Olayı Tetiklendi
+        │
+        ▼
+WhatsApp Servisi
+        │  Kullanıcının kayıtlı WhatsApp telefon numarasını bulur
+        │  Önceden onaylanmış Meta şablonunu seçer
+        ▼
+Meta WhatsApp Cloud API
+  POST https://graph.facebook.com/v19.0/{phone_id}/messages
+        │
+        ▼
+Kullanıcı herhangi bir cihazda WhatsApp mesajı alır
+        │
+        ▼
+Teslimat makbuzu webhook → POST /api/v1/whatsapp/webhook
+        │
+        ▼
+Durum whatsapp_message_log tablosuna kaydedilir
+```
+
+### Mesaj Şablonu Örneği
+
+Tüm şablonların kullanılmadan önce **Meta Business Manager**'da onaylanması gerekir.
+
+`ahet_dtc_alert` şablonu:
+```
+🔴 AH@ Araç Uyarısı
+
+Araç: {{1}}
+Hata Kodu: {{2}} — {{3}}
+Tarih: {{4}}
+
+Detaylar için web paneline giriş yapın.
+```
+
+### API Endpoint'leri
+
+| Yöntem | Endpoint | Açıklama |
+|--------|---------|---------|
+| `GET` | `/api/v1/whatsapp/webhook` | Meta webhook doğrulaması (hub.challenge) |
+| `POST` | `/api/v1/whatsapp/webhook` | Meta'dan teslimat makbuzu alma |
+| `POST` | `/api/v1/whatsapp/register` | Kullanıcının WhatsApp telefon numarasını kaydet |
+
+### Kurulum
+
+1. [developers.facebook.com](https://developers.facebook.com) adresinde **Meta Business App** oluşturun
+2. Uygulamanıza **WhatsApp** ürününü ekleyin
+3. `whatsapp_business_messaging` iznine sahip **System User Token** oluşturun
+4. **Phone Number ID** ve **WhatsApp Business Account ID**'yi not edin
+5. Webhook URL'sini kaydedin: `https://alan-adiniz/api/v1/whatsapp/webhook`
+6. Mesaj şablonlarını Meta Business Manager'da onay için gönderin
+7. Kimlik bilgilerini `.env` dosyasına ekleyin (bkz. [Ortam Değişkenleri](#10-ortam-değişkenleri))
+
+---
+
+## 8. Tasarım Sistemi
 
 AH@, **Brutalist** tasarım dilini zorunlu kılar. Bu konuda esneklik yoktur.
 
@@ -1065,6 +1229,10 @@ npx react-native run-android
 | `FCM_CREDENTIALS_JSON` | Firebase servis hesabı JSON dosyası yolu | `/secrets/firebase.json` |
 | `GOOGLE_CALENDAR_CREDENTIALS` | Google OAuth2 servis hesabı yolu | `/secrets/google.json` |
 | `DEVICE_API_KEY` | ESP32'nin toplu gönderim için kullandığı API anahtarı | `esp32-cihaz-anahtari-xxxx` |
+| `WHATSAPP_TOKEN` | `whatsapp_business_messaging` iznine sahip Meta system user token'ı | `EAAxxxxx...` |
+| `WHATSAPP_PHONE_ID` | Meta Business Manager'dan Phone Number ID | `123456789` |
+| `WHATSAPP_BUSINESS_ID` | WhatsApp Business Account ID | `987654321` |
+| `WHATSAPP_WEBHOOK_VERIFY_TOKEN` | Meta webhook doğrulaması için rastgele secret | `my-random-secret` |
 | `SERVER_PORT` | HTTP sunucu portu | `8080` |
 | `ENVIRONMENT` | `development` veya `production` | `development` |
 

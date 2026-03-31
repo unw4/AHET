@@ -1,0 +1,53 @@
+name: Backend Test
+
+on:
+  push:
+    paths:
+      - 'backend/**'
+  pull_request:
+    paths:
+      - 'backend/**'
+
+jobs:
+  test:
+    name: Go Test
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: ahet
+          POSTGRES_PASSWORD: ahet_test
+          POSTGRES_DB: ahet_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.22'
+
+      - name: Install dependencies
+        run: cd backend && go mod download
+
+      - name: Run tests
+        env:
+          DATABASE_URL: postgres://ahet:ahet_test@localhost:5432/ahet_test?sslmode=disable
+          JWT_SECRET: ci-test-secret-do-not-use-in-prod
+          DEVICE_API_KEY: ci-device-key
+          ENVIRONMENT: test
+        run: cd backend && go test ./... -v -cover
+
+      - name: Run lint
+        uses: golangci/golangci-lint-action@v6
+        with:
+          working-directory: backend

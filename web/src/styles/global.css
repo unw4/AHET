@@ -1,0 +1,93 @@
+/* ─── AH@ Global Styles ───────────────────────────────
+   Design System: BRUTALIST
+   Authors: MERT EGEMEN ÇAR · MEHMET ALİ KAYIK
+   RULES:
+     - border-radius: 0 everywhere
+     - No gradients
+     - No blur / glass morphism
+     - Primary: #FFD700  Secondary: #001F5B
+──────────────────────────────────────────────────────────── */
+
+/* ─── CSS Custom Properties (Design Tokens) ─────────────────── */
+:root {
+  --color-primary:       #FFD700;
+  --color-secondary:     #001F5B;
+  --color-bg:            #FFFFFF;
+  --color-surface:       #F0F0F0;
+  --color-border:        #0A0A0A;
+  --color-text-primary:  #0A0A0A;
+  --color-text-inverse:  #FFFFFF;
+  --color-danger:        #D00000;
+  --color-success:       #006400;
+  --color-warning:       #FFD700;
+
+  --shadow-brutalist:    4px 4px 0px var(--color-secondary);
+  --shadow-danger:       4px 4px 0px var(--color-danger);
+
+  --border-width:        2px;
+  --border-style:        solid;
+  --border-color:        var(--color-border);
+  --border:              var(--border-width) var(--border-style) var(--border-color);
+
+  --radius:              0px;
+
+  --font-mono:           'IBM Plex Mono', 'Courier New', monospace;
+  --font-sans:           'Space Grotesk', 'Arial', sans-serif;
+
+  --space-1:  4px;
+  --space-2:  8px;
+  --space-3:  12px;
+  --space-4:  16px;
+  --space-5:  24px;
+  --space-6:  32px;
+  --space-7:  48px;
+  --space-8:  64px;
+}
+
+/* ─── Reset ──────────────────────────────────────────────────── */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  border-radius: var(--radius) !important; /* Enforce globally */
+}
+
+html {
+  font-size: 16px;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  font-family: var(--font-sans);
+  font-size: 1rem;
+  line-height: 1.5;
+  color: var(--color-text-primary);
+  background-color: var(--color-bg);
+  -webkit-font-smoothing: antialiased;
+}
+
+img, video {
+  max-width: 100%;
+  display: block;
+}
+
+button {
+  cursor: pointer;
+  font-family: inherit;
+}
+
+a {
+  color: var(--color-secondary);
+  text-decoration: underline;
+}
+
+a:hover {
+  background-color: var(--color-secondary);
+  color: var(--color-primary);
+}
+
+/* ─── Scrollbar ──────────────────────────────────────────────── */
+::-webkit-scrollbar { width: 8px; height: 8px; }
+::-webkit-scrollbar-track { background: var(--color-surface); }
+::-webkit-scrollbar-thumb { background: var(--color-secondary); }
+::-webkit-scrollbar-thumb:hover { background: var(--color-text-primary); }

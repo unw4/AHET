@@ -1,0 +1,47 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "api-response",
+  "title": "Standard API Response Envelope",
+  "description": "All AH@ API responses are wrapped in this envelope",
+  "type": "object",
+  "required": ["success"],
+  "properties": {
+    "success": {
+      "type": "boolean",
+      "description": "True if the request was processed successfully"
+    },
+    "data": {
+      "description": "Response payload (present when success=true)"
+    },
+    "error": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "string",
+          "description": "Machine-readable error code (e.g. VALIDATION_ERROR, NOT_FOUND)"
+        },
+        "message": {
+          "type": "string",
+          "description": "Human-readable error message"
+        },
+        "details": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Optional list of field-level validation errors"
+        }
+      },
+      "required": ["code", "message"],
+      "description": "Error information (present when success=false)"
+    },
+    "meta": {
+      "type": "object",
+      "properties": {
+        "page":        { "type": "integer" },
+        "per_page":    { "type": "integer" },
+        "total":       { "type": "integer" },
+        "total_pages": { "type": "integer" }
+      },
+      "description": "Pagination metadata (present on list endpoints)"
+    }
+  }
+}

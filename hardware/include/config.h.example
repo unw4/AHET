@@ -1,0 +1,53 @@
+/**
+ * config.h.example
+ * Copy this file to config.h and fill in your values.
+ * config.h is excluded from version control (.gitignore).
+ *
+ * Authors: MERT EGEMEN ÇAR · MEHMET ALİ KAYIK
+ */
+
+#ifndef CONFIG_H
+#define CONFIG_H
+
+// ─── Wi-Fi ────────────────────────────────────────────────────
+#define WIFI_SSID        "YOUR_GARAGE_SSID"
+#define WIFI_PASSWORD    "YOUR_WIFI_PASSWORD"
+
+// ─── Backend API ──────────────────────────────────────────────
+#define API_BASE_URL     "http://192.168.1.100:8080/api/v1"
+#define API_KEY          "esp32-device-key-REPLACE_ME"
+
+// ─── Vehicle Identity ─────────────────────────────────────────
+#define VEHICLE_ID       "vehicle-001"
+
+// ─── SPI Pin Definitions ─────────────────────────────────────
+#define PIN_MCP2515_CS   5    // MCP2515 Chip Select
+#define PIN_MCP2515_INT  4    // MCP2515 Interrupt
+#define PIN_SD_CS        15   // MicroSD Chip Select
+
+// Shared SPI bus (hardware SPI)
+#define PIN_SPI_MOSI     23
+#define PIN_SPI_MISO     19
+#define PIN_SPI_SCK      18
+
+// ─── I2C Pin Definitions (DS3231 RTC) ────────────────────────
+#define PIN_I2C_SDA      21
+#define PIN_I2C_SCL      22
+
+// ─── CAN Bus ─────────────────────────────────────────────────
+#define CAN_SPEED        CAN_500KBPS   // Standard OBD-II CAN speed
+#define CAN_CLOCK        MCP_8MHZ      // MCP2515 crystal frequency
+
+// ─── SD Card ─────────────────────────────────────────────────
+#define SD_LOG_DIR       "/logs"
+#define SD_MIN_FREE_MB   50            // Warn if free space < 50 MB
+
+// ─── Gas Test ────────────────────────────────────────────────
+#define GAS_TEST_DURATION_MS  (20 * 60 * 1000UL)  // 20 minutes
+
+// ─── Transmission Retry ──────────────────────────────────────
+#define WIFI_CONNECT_TIMEOUT_MS   15000
+#define TRANSMIT_MAX_RETRIES      3
+#define TRANSMIT_RETRY_BASE_MS    2000  // Exponential backoff base
+
+#endif // CONFIG_H

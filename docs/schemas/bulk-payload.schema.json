@@ -1,0 +1,32 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "bulk-payload",
+  "title": "ESP32 Bulk Telemetry Payload",
+  "description": "The JSON body sent by the ESP32 in a single POST /api/v1/telemetry/bulk request",
+  "type": "object",
+  "required": ["device_id", "records"],
+  "properties": {
+    "device_id": {
+      "type": "string",
+      "description": "Unique device identifier (matches VEHICLE_ID in config.h)"
+    },
+    "firmware_version": {
+      "type": "string",
+      "description": "Firmware semver string for diagnostics"
+    },
+    "transmitted_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "UTC timestamp of when the transmission was initiated"
+    },
+    "records": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "sd-log-record"
+      },
+      "description": "Array of telemetry records from the SD card log"
+    }
+  },
+  "additionalProperties": false
+}

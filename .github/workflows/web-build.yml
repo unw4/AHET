@@ -1,0 +1,38 @@
+name: Web Panel Build & Test
+
+on:
+  push:
+    paths:
+      - 'web/**'
+  pull_request:
+    paths:
+      - 'web/**'
+
+jobs:
+  build:
+    name: Vite Build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: web/package-lock.json
+
+      - name: Install dependencies
+        run: cd web && npm ci
+
+      - name: Type check
+        run: cd web && npx tsc --noEmit
+
+      - name: Lint
+        run: cd web && npm run lint
+
+      - name: Run tests
+        run: cd web && npm run test
+
+      - name: Build
+        run: cd web && npm run build

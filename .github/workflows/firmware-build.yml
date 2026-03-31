@@ -1,0 +1,33 @@
+name: Firmware Build & Test
+
+on:
+  push:
+    paths:
+      - 'hardware/**'
+  pull_request:
+    paths:
+      - 'hardware/**'
+
+jobs:
+  build:
+    name: PlatformIO Build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install PlatformIO
+        run: pip install platformio
+
+      - name: Copy config example
+        run: cp hardware/include/config.h.example hardware/include/config.h
+
+      - name: Build firmware
+        run: cd hardware && pio run
+
+      - name: Run unit tests (native)
+        run: cd hardware && pio test -e native

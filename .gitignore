@@ -1,0 +1,43 @@
+# ─── Environment ──────────────────────────────────────────────
+.env
+.env.local
+.env.*.local
+*.env
+
+# ─── PlatformIO / Hardware ────────────────────────────────────
+.pio/
+hardware/.pio/
+hardware/include/config.h
+
+# ─── Go ───────────────────────────────────────────────────────
+backend/bin/
+backend/tmp/
+*.exe
+
+# ─── Node / Web / Mobile ─────────────────────────────────────
+node_modules/
+web/node_modules/
+mobile/node_modules/
+web/dist/
+web/.vite/
+mobile/.expo/
+mobile/android/.gradle/
+mobile/android/app/build/
+mobile/ios/Pods/
+mobile/ios/build/
+
+# ─── OS ───────────────────────────────────────────────────────
+.DS_Store
+Thumbs.db
+
+# ─── Editor ───────────────────────────────────────────────────
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# ─── Secrets / Certs ─────────────────────────────────────────
+secrets/
+*.pem
+*.key
+*.crt

@@ -1,0 +1,457 @@
+openapi: 3.0.3
+
+info:
+  title: AH@ API
+  version: 1.0.0
+  description: |
+    REST API for the AH@ offline-first IoT vehicle telemetry and control system.
+
+    **Authentication:**
+    - Human users: Bearer JWT token in `Authorization` header
+    - ESP32 devices: `X-Device-Api-Key` header
+  contact:
+    name: MERT EGEMEN ÇAR · MEHMET ALİ KAYIK
+
+servers:
+  - url: http://localhost:8080/api/v1
+    description: Local development
+  - url: https://api.ahet.io/v1
+    description: Production
+
+security:
+  - BearerAuth: []
+
+tags:
+  - name: auth
+    description: Authentication endpoints
+  - name: telemetry
+    description: ESP32 telemetry ingestion and query
+  - name: vehicles
+    description: Vehicle registry management
+  - name: tasks
+    description: Task management (Manager assigns, Employee completes)
+  - name: tests
+    description: Gas test session management
+  - name: maintenance
+    description: Maintenance schedule and records
+  - name: notifications
+    description: FCM device token registration and notification history
+
+paths:
+  /auth/login:
+    post:
+      tags: [auth]
+      summary: Obtain JWT tokens
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [email, password]
+              properties:
+                email:    { type: string, format: email }
+                password: { type: string }
+      responses:
+        "200":
+          description: Login successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+        "401":
+          description: Invalid credentials
+
+  /auth/refresh:
+    post:
+      tags: [auth]
+      summary: Refresh access token
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [refresh_token]
+              properties:
+                refresh_token: { type: string }
+      responses:
+        "200":
+          description: Token refreshed
+
+  /auth/logout:
+    post:
+      tags: [auth]
+      summary: Invalidate refresh token
+      responses:
+        "204":
+          description: Logged out
+
+  /telemetry/bulk:
+    post:
+      tags: [telemetry]
+      summary: Ingest bulk telemetry from ESP32
+      security:
+        - DeviceApiKey: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BulkPayload'
+      responses:
+        "200":
+          description: Records accepted
+        "400":
+          description: Validation error
+        "401":
+          description: Invalid device API key
+
+  /telemetry/{vehicle_id}:
+    get:
+      tags: [telemetry]
+      summary: Query telemetry history for a vehicle
+      parameters:
+        - name: vehicle_id
+          in: path
+          required: true
+          schema: { type: string, format: uuid }
+        - name: from
+          in: query
+          schema: { type: string, format: date }
+        - name: to
+          in: query
+          schema: { type: string, format: date }
+        - name: page
+          in: query
+          schema: { type: integer, default: 1 }
+        - name: per_page
+          in: query
+          schema: { type: integer, default: 50 }
+      responses:
+        "200":
+          description: Telemetry list
+
+  /vehicles:
+    get:
+      tags: [vehicles]
+      summary: List all vehicles
+      responses:
+        "200":
+          description: Vehicle list
+    post:
+      tags: [vehicles]
+      summary: Register new vehicle (Manager only)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/VehicleCreate'
+      responses:
+        "201":
+          description: Vehicle created
+        "403":
+          description: Insufficient permissions
+
+  /vehicles/{id}:
+    get:
+      tags: [vehicles]
+      summary: Get vehicle detail
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string, format: uuid }
+      responses:
+        "200":
+          description: Vehicle detail
+        "404":
+          description: Not found
+    delete:
+      tags: [vehicles]
+      summary: Deregister vehicle (Manager only)
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string, format: uuid }
+      responses:
+        "204":
+          description: Deleted
+
+  /vehicles/{id}/dtcs:
+    get:
+      tags: [vehicles]
+      summary: Get DTC event history for vehicle
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string, format: uuid }
+        - name: active_only
+          in: query
+          schema: { type: boolean, default: false }
+      responses:
+        "200":
+          description: DTC event list
+
+  /tasks:
+    get:
+      tags: [tasks]
+      summary: List tasks
+      parameters:
+        - name: status
+          in: query
+          schema: { type: string, enum: [TODO, IN_PROGRESS, DONE, CANCELLED] }
+        - name: assigned_to
+          in: query
+          schema: { type: string, format: uuid }
+      responses:
+        "200":
+          description: Task list
+    post:
+      tags: [tasks]
+      summary: Create and assign task (Manager only)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TaskCreate'
+      responses:
+        "201":
+          description: Task created
+
+  /tasks/{id}:
+    put:
+      tags: [tasks]
+      summary: Update task status or notes
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string, format: uuid }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TaskUpdate'
+      responses:
+        "200":
+          description: Task updated
+    delete:
+      tags: [tasks]
+      summary: Delete task (Manager only)
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string, format: uuid }
+      responses:
+        "204":
+          description: Deleted
+
+  /tests:
+    get:
+      tags: [tests]
+      summary: List test sessions (Manager only)
+      responses:
+        "200":
+          description: Test session list
+
+  /tests/trigger:
+    post:
+      tags: [tests]
+      summary: Approve and schedule a gas test (Manager only)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [vehicle_id]
+              properties:
+                vehicle_id: { type: string, format: uuid }
+                notes:      { type: string }
+      responses:
+        "201":
+          description: Test session created
+
+  /tests/{id}:
+    get:
+      tags: [tests]
+      summary: Get test session result
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string, format: uuid }
+      responses:
+        "200":
+          description: Test session detail
+
+  /maintenance:
+    get:
+      tags: [maintenance]
+      summary: List maintenance schedules
+      responses:
+        "200":
+          description: Maintenance list
+    post:
+      tags: [maintenance]
+      summary: Create maintenance record (Manager only)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MaintenanceCreate'
+      responses:
+        "201":
+          description: Maintenance record created
+
+  /maintenance/{id}:
+    put:
+      tags: [maintenance]
+      summary: Update maintenance record
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string, format: uuid }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MaintenanceUpdate'
+      responses:
+        "200":
+          description: Updated
+
+  /notifications/register:
+    post:
+      tags: [notifications]
+      summary: Register FCM device token
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [fcm_token, platform]
+              properties:
+                fcm_token: { type: string }
+                platform:  { type: string, enum: [ios, android, web] }
+      responses:
+        "201":
+          description: Token registered
+
+  /notifications:
+    get:
+      tags: [notifications]
+      summary: List notification history for authenticated user
+      parameters:
+        - name: unread_only
+          in: query
+          schema: { type: boolean, default: false }
+      responses:
+        "200":
+          description: Notification list
+
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+    DeviceApiKey:
+      type: apiKey
+      in: header
+      name: X-Device-Api-Key
+
+  schemas:
+    ApiResponse:
+      type: object
+      properties:
+        success: { type: boolean }
+        data:    {}
+        error:
+          type: object
+          properties:
+            code:    { type: string }
+            message: { type: string }
+
+    BulkPayload:
+      type: object
+      required: [device_id, records]
+      properties:
+        device_id:         { type: string }
+        firmware_version:  { type: string }
+        transmitted_at:    { type: string, format: date-time }
+        records:
+          type: array
+          items:
+            $ref: '#/components/schemas/TelemetryRecord'
+
+    TelemetryRecord:
+      type: object
+      required: [vehicle_id, timestamp, km]
+      properties:
+        vehicle_id:     { type: string }
+        timestamp:      { type: string, format: date-time }
+        km:             { type: integer }
+        dtcs:           { type: array, items: { type: string } }
+        engine_rpm:     { type: integer }
+        coolant_temp_c: { type: integer }
+        test_active:    { type: boolean }
+        test_result:    { type: string, enum: [PASS, FAIL, INCOMPLETE] }
+
+    VehicleCreate:
+      type: object
+      required: [name, plate]
+      properties:
+        name:  { type: string }
+        plate: { type: string }
+        make:  { type: string }
+        model: { type: string }
+        year:  { type: integer }
+
+    TaskCreate:
+      type: object
+      required: [title, vehicle_id]
+      properties:
+        title:       { type: string }
+        description: { type: string }
+        vehicle_id:  { type: string, format: uuid }
+        assigned_to: { type: string, format: uuid }
+        priority:    { type: string, enum: [LOW, MEDIUM, HIGH, URGENT] }
+        due_date:    { type: string, format: date }
+
+    TaskUpdate:
+      type: object
+      properties:
+        status:      { type: string, enum: [TODO, IN_PROGRESS, DONE, CANCELLED] }
+        description: { type: string }
+        assigned_to: { type: string, format: uuid }
+
+    MaintenanceCreate:
+      type: object
+      required: [vehicle_id, type, title, scheduled_date]
+      properties:
+        vehicle_id:     { type: string, format: uuid }
+        type:           { type: string, enum: [OIL_CHANGE, TIRE_ROTATION, BRAKE_SERVICE, GAS_TEST, GENERAL_SERVICE, OTHER] }
+        title:          { type: string }
+        description:    { type: string }
+        scheduled_date: { type: string, format: date }
+        scheduled_km:   { type: integer }
+
+    MaintenanceUpdate:
+      type: object
+      properties:
+        status:         { type: string, enum: [SCHEDULED, IN_PROGRESS, COMPLETED, OVERDUE, CANCELLED] }
+        completed_date: { type: string, format: date }
+        description:    { type: string }

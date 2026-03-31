@@ -1,0 +1,145 @@
+/* ─── AH@ Brutalist Utility Classes ───────────────────
+   Design System: BRUTALIST
+   Authors: MERT EGEMEN ÇAR · MEHMET ALİ KAYIK
+──────────────────────────────────────────────────────────── */
+
+/* ─── Borders ────────────────────────────────────────────────── */
+.border         { border: var(--border); }
+.border-thick   { border: 3px solid var(--color-border); }
+.border-primary { border: var(--border-width) solid var(--color-primary); }
+.border-danger  { border: var(--border-width) solid var(--color-danger); }
+.border-success { border: var(--border-width) solid var(--color-success); }
+
+/* ─── Shadows ────────────────────────────────────────────────── */
+.shadow         { box-shadow: var(--shadow-brutalist); }
+.shadow-danger  { box-shadow: var(--shadow-danger); }
+.shadow-none    { box-shadow: none; }
+
+/* ─── Backgrounds ────────────────────────────────────────────── */
+.bg-primary   { background-color: var(--color-primary); }
+.bg-secondary { background-color: var(--color-secondary); }
+.bg-surface   { background-color: var(--color-surface); }
+.bg-danger    { background-color: var(--color-danger); }
+.bg-success   { background-color: var(--color-success); }
+
+/* ─── Text Colors ────────────────────────────────────────────── */
+.text-primary   { color: var(--color-text-primary); }
+.text-inverse   { color: var(--color-text-inverse); }
+.text-secondary { color: var(--color-secondary); }
+.text-danger    { color: var(--color-danger); }
+.text-success   { color: var(--color-success); }
+.text-mono      { font-family: var(--font-mono); }
+
+/* ─── Interactive States (Brutalist) ─────────────────────────── */
+.btn-brutalist {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-2) var(--space-4);
+  font-family: var(--font-mono);
+  font-weight: 700;
+  font-size: 0.875rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  background-color: var(--color-primary);
+  color: var(--color-text-primary);
+  border: var(--border-width) solid var(--color-border);
+  box-shadow: var(--shadow-brutalist);
+  cursor: pointer;
+  transition: transform 80ms, box-shadow 80ms;
+  text-decoration: none;
+}
+
+.btn-brutalist:hover {
+  background-color: var(--color-secondary);
+  color: var(--color-primary);
+  border-color: var(--color-secondary);
+}
+
+.btn-brutalist:active {
+  transform: translate(4px, 4px);
+  box-shadow: none;
+}
+
+.btn-brutalist--secondary {
+  background-color: var(--color-secondary);
+  color: var(--color-text-inverse);
+}
+
+.btn-brutalist--secondary:hover {
+  background-color: var(--color-primary);
+  color: var(--color-text-primary);
+}
+
+.btn-brutalist--danger {
+  background-color: var(--color-danger);
+  color: var(--color-text-inverse);
+  box-shadow: var(--shadow-danger);
+}
+
+/* ─── Status Badges ──────────────────────────────────────────── */
+.badge {
+  display: inline-block;
+  padding: 2px var(--space-2);
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  border: 1px solid currentColor;
+}
+
+.badge--todo        { background: var(--color-surface); color: var(--color-text-primary); }
+.badge--in-progress { background: var(--color-primary); color: var(--color-text-primary); }
+.badge--done        { background: var(--color-success); color: var(--color-text-inverse); }
+.badge--danger      { background: var(--color-danger);  color: var(--color-text-inverse); }
+.badge--warning     { background: var(--color-primary); color: var(--color-text-primary); }
+
+/* ─── Table ──────────────────────────────────────────────────── */
+.table-brutalist {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: var(--font-mono);
+  font-size: 0.875rem;
+}
+
+.table-brutalist th,
+.table-brutalist td {
+  border: 1px solid var(--color-border);
+  padding: var(--space-2) var(--space-3);
+  text-align: left;
+}
+
+.table-brutalist th {
+  background-color: var(--color-secondary);
+  color: var(--color-text-inverse);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.table-brutalist tr:nth-child(even) td {
+  background-color: var(--color-surface);
+}
+
+.table-brutalist tr:hover td {
+  background-color: var(--color-primary);
+}
+
+/* ─── Card ───────────────────────────────────────────────────── */
+.card {
+  border: var(--border);
+  box-shadow: var(--shadow-brutalist);
+  padding: var(--space-4);
+  background-color: var(--color-bg);
+}
+
+.card--highlighted {
+  border-color: var(--color-primary);
+  border-width: 3px;
+}
+
+.card--danger {
+  border-color: var(--color-danger);
+  box-shadow: var(--shadow-danger);
+}

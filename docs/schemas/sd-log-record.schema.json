@@ -1,0 +1,55 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "sd-log-record",
+  "title": "SD Card Log Record",
+  "description": "A single telemetry record written to the MicroSD card by the ESP32",
+  "type": "object",
+  "required": ["vehicle_id", "timestamp", "km"],
+  "properties": {
+    "vehicle_id": {
+      "type": "string",
+      "description": "Unique identifier for the vehicle (configured in config.h)"
+    },
+    "timestamp": {
+      "type": "string",
+      "format": "date-time",
+      "description": "ISO 8601 UTC timestamp from DS3231 RTC"
+    },
+    "km": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "Odometer reading in kilometers"
+    },
+    "dtcs": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "pattern": "^[PBCU][0-9A-F]{4}$"
+      },
+      "description": "List of active Diagnostic Trouble Codes (OBD-II format)"
+    },
+    "engine_rpm": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 10000,
+      "description": "Engine RPM at time of reading (null if engine off)"
+    },
+    "coolant_temp_c": {
+      "type": "integer",
+      "minimum": -40,
+      "maximum": 215,
+      "description": "Engine coolant temperature in Celsius"
+    },
+    "test_active": {
+      "type": "boolean",
+      "default": false,
+      "description": "True if a 20-minute gas test was in progress at recording time"
+    },
+    "test_result": {
+      "type": ["string", "null"],
+      "enum": ["PASS", "FAIL", "INCOMPLETE", null],
+      "description": "Gas test result (populated at end of test only)"
+    }
+  },
+  "additionalProperties": false
+}

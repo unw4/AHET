@@ -42,7 +42,7 @@ export interface TelemetryRecord {
   km: number
   engineRpm?: number
   coolantTempC?: number
-  testActive: boolean
+  diagnosticActive: boolean   // true when a diagnostic session was running
   dtcs?: DTCEvent[]
 }
 
@@ -80,10 +80,17 @@ export interface Task {
   completedAt?: string
   createdAt: string
   updatedAt: string
+  diagnosticSessionId?: string  // linked diagnostic session if task originated from one
 }
 
 // ─── Maintenance ─────────────────────────────────────────────
-export type MaintenanceType = 'OIL_CHANGE' | 'TIRE_ROTATION' | 'BRAKE_SERVICE' | 'GAS_TEST' | 'GENERAL_SERVICE' | 'OTHER'
+export type MaintenanceType =
+  | 'OIL_CHANGE'
+  | 'TIRE_ROTATION'
+  | 'BRAKE_SERVICE'
+  | 'GENERAL_SERVICE'
+  | 'OTHER'
+
 export type MaintenanceStatus = 'SCHEDULED' | 'IN_PROGRESS' | 'COMPLETED' | 'OVERDUE' | 'CANCELLED'
 
 export interface MaintenanceSchedule {
@@ -100,22 +107,46 @@ export interface MaintenanceSchedule {
   createdAt: string
 }
 
-// ─── Test Sessions ───────────────────────────────────────────
-export type TestResult = 'PASS' | 'FAIL' | 'INCOMPLETE'
+// ─── Diagnostic Sessions ──────────────────────────────────────
+// A diagnostic session is started by a manager/employee while the vehicle
+// engine is running. The ESP32 reads live OBD-II/CAN data and logs it.
+// Findings (DTC codes + descriptions) are reviewed by the in-house mechanic
+// to determine repair actions and cost — no external inspection required.
 
-export interface TestSession {
+export type DiagnosticStatus = 'PENDING' | 'ACTIVE' | 'COMPLETED'
+
+export interface DiagnosticFinding {
+  code: string          // OBD-II DTC code, e.g. "P0300"
+  description: string   // human-readable description
+  severity: DTCSeverity
+}
+
+export interface DiagnosticSession {
   id: string
   vehicleId: string
   vehicle?: Pick<Vehicle, 'id' | 'name' | 'plate'>
-  approvedBy: string
+  startedBy: string                     // user id who created the session
+  mechanicId?: string                   // assigned mechanic user id
+  mechanicName?: string
+  status: DiagnosticStatus
   startedAt?: string
   completedAt?: string
-  result?: TestResult
-  notes?: string
+  findings: DiagnosticFinding[]
+  repairCostEstimate?: number           // in TRY, filled by mechanic after review
+  linkedTaskId?: string                 // repair task auto-created from this session
+  driverComplaint?: string              // what the driver reported before session
+  notes?: string                        // mechanic notes after session
+  createdAt: string
 }
 
 // ─── Notifications ───────────────────────────────────────────
-export type NotificationType = 'DTC_DETECTED' | 'KM_THRESHOLD' | 'TEST_APPROVED' | 'TEST_RESULT' | 'TASK_ASSIGNED' | 'MAINTENANCE_DUE'
+export type NotificationType =
+  | 'DTC_DETECTED'
+  | 'KM_THRESHOLD'
+  | 'DIAGNOSTIC_STARTED'
+  | 'DIAGNOSTIC_COMPLETED'
+  | 'TASK_ASSIGNED'
+  | 'MAINTENANCE_DUE'
 
 export interface Notification {
   id: string

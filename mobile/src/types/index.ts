@@ -1,6 +1,6 @@
 // AH@ Mobile — Shared TypeScript Types
 // Authors: MERT EGEMEN ÇAR · MEHMET ALİ KAYIK
-// Re-exports and extends web types for React Native specifics
+// Re-exports web types for React Native
 
 export type {
   UserRole,
@@ -16,8 +16,9 @@ export type {
   MaintenanceSchedule,
   MaintenanceType,
   MaintenanceStatus,
-  TestSession,
-  TestResult,
+  DiagnosticSession,
+  DiagnosticFinding,
+  DiagnosticStatus,
   Notification,
   NotificationType,
   ApiResponse,
@@ -31,6 +32,7 @@ export interface PushNotificationPayload {
   vehicleId?: string
   taskId?: string
   maintenanceId?: string
+  diagnosticSessionId?: string
 }
 
 export type AppScreen =

@@ -42,8 +42,13 @@
 #define SD_LOG_DIR       "/logs"
 #define SD_MIN_FREE_MB   50            // Warn if free space < 50 MB
 
-// ─── Gas Test ────────────────────────────────────────────────
-#define GAS_TEST_DURATION_MS  (20 * 60 * 1000UL)  // 20 minutes
+// ─── Diagnostic Session ───────────────────────────────────────
+// During a diagnostic session the ESP32 polls OBD-II PIDs at a higher rate
+// and sets diagnostic_active=true in each telemetry record.
+// Session start/end is signalled by the backend via the device command endpoint.
+#define DIAG_POLL_INTERVAL_MS     500UL   // OBD-II poll rate during session (ms)
+#define DIAG_IDLE_POLL_INTERVAL_MS 5000UL // OBD-II poll rate during normal operation (ms)
+#define DIAG_MAX_DTC_COUNT        20      // max DTC codes to store per session
 
 // ─── Transmission Retry ──────────────────────────────────────
 #define WIFI_CONNECT_TIMEOUT_MS   15000

@@ -20,8 +20,8 @@ const NAV = [
     icon: <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.8"><path d="M10 2l-1.5 1.5-1.5-1.5 1.5-1.5L10 2z"/><path d="M8.5 3.5L2 10l-1 3 3-1 6.5-6.5"/><path d="M3 12l1 1"/></svg>,
   },
   {
-    to: '/tests', label: 'Egzoz Testleri',
-    icon: <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.8"><rect x="2" y="2" width="12" height="12"/><path d="M5 8l2.5 2.5 4-4"/></svg>,
+    to: '/tests', label: 'Tanı Oturumları',
+    icon: <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.8"><circle cx="8" cy="8" r="6"/><path d="M8 5v4M8 11v1"/></svg>,
   },
 ]
 

@@ -7,7 +7,7 @@ const TITLES: Record<string, string> = {
   '/vehicles': 'Araç Listesi',
   '/tasks': 'Görev Panosu',
   '/maintenance': 'Bakım Takvimi',
-  '/tests': 'Egzoz Testleri',
+  '/tests': 'Tanı Oturumları',
 }
 
 const TopBar: React.FC = () => {

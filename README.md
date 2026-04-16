@@ -221,7 +221,7 @@ Vehicle Battery (12V)
 ║     ▼                                                             ║
 ║  [SCAN CAN BUS]                                                   ║
 ║     │  Read DTCs, KM, engine vitals from MCP2515                  ║
-║     │  If gas test flag set: trigger 20-min test sequence         ║
+║     │  If diagnostic session active: high-rate OBD-II poll (500ms)║
 ║     ▼                                                             ║
 ║  [BUILD JSON RECORD]                                              ║
 ║     │  {                                                          ║
@@ -231,7 +231,7 @@ Vehicle Battery (12V)
 ║     │    "dtcs": ["P0300", "P0171"],                             ║
 ║     │    "engine_rpm": 820,                                      ║
 ║     │    "coolant_temp_c": 91,                                   ║
-║     │    "test_active": false                                     ║
+║     │    "diagnostic_active": false                                     ║
 ║     │  }                                                          ║
 ║     ▼                                                             ║
 ║  [APPEND TO SD CARD]                                              ║
@@ -328,9 +328,9 @@ All endpoints are prefixed with `/api/v1`. Authentication is via Bearer JWT toke
 
 | Method | Endpoint | Description | Access |
 |--------|----------|-------------|--------|
-| `GET` | `/tests` | List all test sessions | Manager |
-| `POST` | `/tests/trigger` | Approve and schedule a gas test | Manager |
-| `GET` | `/tests/:id` | Get test session result | Manager, Employee |
+| `GET` | `/diagnostics` | List diagnostic sessions | Manager, Employee |
+| `POST` | `/diagnostics` | Create diagnostic session | Manager, Employee |
+| `GET` | `/diagnostics/:id` | Get session detail with findings | Manager, Employee |
 
 #### Maintenance
 
@@ -357,7 +357,7 @@ All endpoints are prefixed with `/api/v1`. Authentication is via Bearer JWT toke
 | View DTC history | ✅ | ✅ | ❌ |
 | Create/assign tasks | ✅ | ❌ | ❌ |
 | Update task status | ✅ | ✅ | ❌ |
-| Trigger gas test | ✅ | ❌ | ❌ |
+| Create diagnostic session | ✅ | ✅ | ❌ |
 | View maintenance schedule | ✅ | ✅ | ✅ |
 | Create maintenance record | ✅ | ❌ | ❌ |
 | Receive push notifications | ✅ | ✅ | ✅ |
@@ -375,7 +375,7 @@ Built with **React + TypeScript + Vite**. Communicates with the backend via REST
 - **Dashboard** — Fleet health overview; vehicles with active DTCs are highlighted in Yellow with a thick Navy border
 - **Vehicle Detail** — Full DTC history, KM chart, last sync timestamp
 - **Task Board** — Kanban: `TODO → IN PROGRESS → DONE`. Manager creates tasks; Employees advance them.
-- **Test Management** — Pending test requests table; Manager clicks `APPROVE` to trigger the gas test via API
+- **Diagnostic Sessions** — In-house OBD-II scan management. Mechanic starts session while engine is running; findings drive repair tasks and cost estimates.
 - **Maintenance Calendar** — Grid-based calendar; events synced to Google/Apple Calendar
 
 ### Mobile App (User / Employee)
@@ -406,8 +406,8 @@ AH@ integrates with the **Meta WhatsApp Business Cloud API** to deliver real-tim
 |-------|---------|-----------|
 | DTC fault detected | `ahet_dtc_alert` | Manager, assigned Employee |
 | KM maintenance threshold reached | `ahet_km_threshold` | Manager |
-| Gas test approved | `ahet_test_approved` | Assigned Employee |
-| Gas test result ready | `ahet_test_result` | Manager |
+| Diagnostic session started | `ahet_diagnostic_started` | Assigned Mechanic |
+| Diagnostic session completed | `ahet_diagnostic_completed` | Manager |
 | Task assigned | `ahet_task_assigned` | Assigned Employee |
 
 ### How It Works
@@ -854,7 +854,7 @@ Araç Aküsü (12V)
 ║     │    "dtcs": ["P0300", "P0171"],                             ║
 ║     │    "engine_rpm": 820,                                      ║
 ║     │    "coolant_temp_c": 91,                                   ║
-║     │    "test_active": false                                     ║
+║     │    "diagnostic_active": false                                     ║
 ║     │  }                                                          ║
 ║     ▼                                                             ║
 ║  [SD KARTA YAZMA]                                                 ║
@@ -951,9 +951,9 @@ Tüm endpoint'ler `/api/v1` ön eki ile başlar. Kimlik doğrulama Bearer JWT to
 
 | Yöntem | Endpoint | Açıklama | Erişim |
 |--------|----------|----------|--------|
-| `GET` | `/tests` | Tüm test oturumlarını listele | Yönetici |
-| `POST` | `/tests/trigger` | Gaz testini onayla ve planla | Yönetici |
-| `GET` | `/tests/:id` | Test oturumu sonucunu getir | Yönetici, Çalışan |
+| `GET` | `/diagnostics` | Tanı oturumlarını listele | Yönetici, Çalışan |
+| `POST` | `/diagnostics` | Tanı oturumu oluştur | Yönetici, Çalışan |
+| `GET` | `/diagnostics/:id` | Oturum detayı ve bulgular | Yönetici, Çalışan |
 
 #### Bakım
 
@@ -998,7 +998,7 @@ Tüm endpoint'ler `/api/v1` ön eki ile başlar. Kimlik doğrulama Bearer JWT to
 - **Gösterge Paneli** — Filo sağlığı özeti; aktif DTC'si olan araçlar Sarı renk ve kalın Lacivert kenarlık ile vurgulanır
 - **Araç Detayı** — Tam DTC geçmişi, KM grafiği, son senkronizasyon zaman damgası
 - **Görev Panosu** — Kanban: `YAPILACAK → DEVAM EDİYOR → TAMAMLANDI`. Yönetici görev oluşturur; Çalışanlar ilerletir.
-- **Test Yönetimi** — Bekleyen test istekleri tablosu; Yönetici API aracılığıyla gaz testini tetiklemek için `ONAYLA` düğmesine tıklar
+- **Tanı Oturumları** — Yerinde OBD-II tarama yönetimi. Teknisyen motor çalışırken oturumu başlatır; bulgular tamir görevlerini ve maliyet tahminlerini oluşturur.
 - **Bakım Takvimi** — Grid tabanlı takvim; Google/Apple Takvim ile senkronize edilmiş etkinlikler
 
 ### Mobil Uygulama (Kullanıcı / Çalışan)
@@ -1029,8 +1029,8 @@ AH@, **Meta WhatsApp Business Cloud API** ile entegre olarak gerçek zamanlı uy
 |------|--------|---------|
 | DTC hata kodu tespit edildi | `ahet_dtc_alert` | Yönetici, atanmış Çalışan |
 | KM bakım eşiğine ulaşıldı | `ahet_km_threshold` | Yönetici |
-| Gaz testi onaylandı | `ahet_test_approved` | Atanmış Çalışan |
-| Gaz testi sonucu hazır | `ahet_test_result` | Yönetici |
+| Tanı oturumu başladı | `ahet_diagnostic_started` | Atanmış Teknisyen |
+| Tanı oturumu tamamlandı | `ahet_diagnostic_completed` | Yönetici |
 | Görev atandı | `ahet_task_assigned` | Atanmış Çalışan |
 
 ### Nasıl Çalışır?

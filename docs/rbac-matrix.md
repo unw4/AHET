@@ -9,9 +9,9 @@
 
 | Role | Description |
 |------|-------------|
-| **MANAGER** | Full administrative access. Can manage vehicles, create tasks, approve tests, create maintenance records, manage users. |
-| **EMPLOYEE** | Operational access. Can view vehicles and DTCs, update task status, view/update maintenance. Cannot create or delete high-level resources. |
-| **USER** | Read-only access. Can view their assigned vehicle's status, receive push notifications, and view maintenance schedules. |
+| **MANAGER** | Full administrative access. Can manage vehicles, create/assign tasks, start diagnostic sessions, create maintenance records, manage users. |
+| **EMPLOYEE** | Operational access. Can start diagnostic sessions, update task status, add findings to sessions, view vehicles and DTCs. Cannot create or delete high-level resources. |
+| **USER** | Read-only access. Can view their assigned vehicle's status, receive push notifications, view maintenance schedules. |
 
 ---
 
@@ -31,9 +31,11 @@
 | | Create & assign | ✅ | ❌ | ❌ |
 | | Update status | ✅ | ✅ (own) | ❌ |
 | | Delete | ✅ | ❌ | ❌ |
-| **Gas Tests** | List | ✅ | ✅ (view) | ❌ |
-| | Trigger/Approve | ✅ | ❌ | ❌ |
-| | View result | ✅ | ✅ | ❌ |
+| **Diagnostic Sessions** | List | ✅ | ✅ | ❌ |
+| | Create (assign mechanic) | ✅ | ✅ | ❌ |
+| | Start / Close | ✅ | ✅ (own) | ❌ |
+| | Add findings + cost | ✅ | ✅ (own) | ❌ |
+| | View detail | ✅ | ✅ | ❌ |
 | **Maintenance** | List | ✅ | ✅ | ✅ |
 | | Create | ✅ | ❌ | ❌ |
 | | Update | ✅ | ✅ | ❌ |
@@ -54,4 +56,5 @@
 - JWT access token payload includes `{ sub: user_id, role: "MANAGER" }`.
 - The RBAC middleware reads the `role` claim from the JWT and compares it against the endpoint's required roles.
 - Device API key (`X-Device-Api-Key` header) bypasses JWT auth for the `/telemetry/bulk` endpoint only.
-- "Own vehicle only" for `USER` role is enforced at the service layer by joining `vehicles` with a user-vehicle assignment table (or using the `vehicle_id` embedded in the user profile).
+- "Own vehicle only" for `USER` role is enforced at the service layer.
+- Diagnostic sessions: an EMPLOYEE may only close sessions they are assigned to as mechanic (`mechanic_id = user.id`).

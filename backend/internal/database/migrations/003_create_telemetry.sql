@@ -9,7 +9,7 @@ CREATE TABLE IF NOT EXISTS telemetry_logs (
     km              INTEGER NOT NULL,
     engine_rpm      SMALLINT,
     coolant_temp_c  SMALLINT,
-    test_active     BOOLEAN NOT NULL DEFAULT FALSE,
+    diagnostic_active BOOLEAN NOT NULL DEFAULT FALSE  -- true when a diagnostic session was running,
     raw_payload     JSONB
 );
 

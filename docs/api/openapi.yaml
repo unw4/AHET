@@ -30,8 +30,8 @@ tags:
     description: Vehicle registry management
   - name: tasks
     description: Task management (Manager assigns, Employee completes)
-  - name: tests
-    description: Gas test session management
+  - name: diagnostics
+    description: Diagnostic session management (in-house mechanic OBD-II scan while engine running)
   - name: maintenance
     description: Maintenance schedule and records
   - name: notifications
@@ -254,36 +254,31 @@ paths:
         "204":
           description: Deleted
 
-  /tests:
+  /diagnostics:
     get:
-      tags: [tests]
-      summary: List test sessions (Manager only)
+      tags: [diagnostics]
+      summary: List diagnostic sessions
       responses:
         "200":
           description: Test session list
 
-  /tests/trigger:
     post:
-      tags: [tests]
-      summary: Approve and schedule a gas test (Manager only)
+      tags: [diagnostics]
+      summary: Create diagnostic session (Manager/Employee)
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              type: object
-              required: [vehicle_id]
-              properties:
-                vehicle_id: { type: string, format: uuid }
-                notes:      { type: string }
+              $ref: '#/components/schemas/DiagnosticSessionCreate'
       responses:
         "201":
-          description: Test session created
+          description: Diagnostic session created
 
-  /tests/{id}:
+  /diagnostics/{id}:
     get:
-      tags: [tests]
-      summary: Get test session result
+      tags: [diagnostics]
+      summary: Get diagnostic session detail with findings
       parameters:
         - name: id
           in: path
@@ -291,7 +286,39 @@ paths:
           schema: { type: string, format: uuid }
       responses:
         "200":
-          description: Test session detail
+          description: Diagnostic session detail
+
+  /diagnostics/{id}/start:
+    post:
+      tags: [diagnostics]
+      summary: Start diagnostic session (set ACTIVE, ESP32 enters high-poll mode)
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string, format: uuid }
+      responses:
+        "200":
+          description: Session started
+
+  /diagnostics/{id}/close:
+    post:
+      tags: [diagnostics]
+      summary: Close session, submit findings and optional repair task creation
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string, format: uuid }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DiagnosticSessionClose'
+      responses:
+        "200":
+          description: Session closed
 
   /maintenance:
     get:
@@ -407,8 +434,7 @@ components:
         dtcs:           { type: array, items: { type: string } }
         engine_rpm:     { type: integer }
         coolant_temp_c: { type: integer }
-        test_active:    { type: boolean }
-        test_result:    { type: string, enum: [PASS, FAIL, INCOMPLETE] }
+        diagnostic_active: { type: boolean }   # true when diagnostic session was running
 
     VehicleCreate:
       type: object
@@ -443,7 +469,7 @@ components:
       required: [vehicle_id, type, title, scheduled_date]
       properties:
         vehicle_id:     { type: string, format: uuid }
-        type:           { type: string, enum: [OIL_CHANGE, TIRE_ROTATION, BRAKE_SERVICE, GAS_TEST, GENERAL_SERVICE, OTHER] }
+        type:           { type: string, enum: [OIL_CHANGE, TIRE_ROTATION, BRAKE_SERVICE, GENERAL_SERVICE, OTHER] }
         title:          { type: string }
         description:    { type: string }
         scheduled_date: { type: string, format: date }
@@ -455,3 +481,29 @@ components:
         status:         { type: string, enum: [SCHEDULED, IN_PROGRESS, COMPLETED, OVERDUE, CANCELLED] }
         completed_date: { type: string, format: date }
         description:    { type: string }
+
+    DiagnosticSessionCreate:
+      type: object
+      required: [vehicle_id]
+      properties:
+        vehicle_id:       { type: string, format: uuid }
+        mechanic_id:      { type: string, format: uuid }
+        driver_complaint: { type: string }
+
+    DiagnosticSessionClose:
+      type: object
+      required: [findings]
+      properties:
+        findings:
+          type: array
+          items:
+            type: object
+            required: [code, description, severity]
+            properties:
+              code:        { type: string, example: P0300 }
+              description: { type: string }
+              severity:    { type: string, enum: [LOW, MEDIUM, HIGH, CRITICAL] }
+        repair_cost_estimate: { type: integer, description: Estimated repair cost in TRY (kuruş) }
+        notes:                { type: string }
+        create_repair_task:   { type: boolean, default: false }
+

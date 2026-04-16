@@ -1,7 +1,7 @@
 -- Migration: 006_create_maintenance
 -- Maintenance schedules and records
 
-CREATE TYPE maintenance_type AS ENUM ('OIL_CHANGE', 'TIRE_ROTATION', 'BRAKE_SERVICE', 'GAS_TEST', 'GENERAL_SERVICE', 'OTHER');
+CREATE TYPE maintenance_type AS ENUM ('OIL_CHANGE', 'TIRE_ROTATION', 'BRAKE_SERVICE', 'GENERAL_SERVICE', 'OTHER');
 CREATE TYPE maintenance_status AS ENUM ('SCHEDULED', 'IN_PROGRESS', 'COMPLETED', 'OVERDUE', 'CANCELLED');
 
 CREATE TABLE IF NOT EXISTS maintenance_schedules (

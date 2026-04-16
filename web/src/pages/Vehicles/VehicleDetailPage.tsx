@@ -110,7 +110,7 @@ const VehicleDetailPage: React.FC = () => {
           </div>
           <div style={{ marginTop: 16, display: 'flex', gap: 10 }}>
             <Button variant="primary">Bakım Planla</Button>
-            <Button variant="secondary">Test Başlat</Button>
+            <Button variant="secondary">Tanı Başlat</Button>
           </div>
         </div>
       </div>

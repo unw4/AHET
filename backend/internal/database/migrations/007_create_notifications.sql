@@ -1,7 +1,7 @@
 -- Migration: 007_create_notifications
 -- Notification delivery log and device token registry
 
-CREATE TYPE notification_type AS ENUM ('DTC_DETECTED', 'KM_THRESHOLD', 'TEST_APPROVED', 'TEST_RESULT', 'TASK_ASSIGNED', 'MAINTENANCE_DUE');
+CREATE TYPE notification_type AS ENUM ('DTC_DETECTED', 'KM_THRESHOLD', 'DIAGNOSTIC_STARTED', 'DIAGNOSTIC_COMPLETED', 'TASK_ASSIGNED', 'MAINTENANCE_DUE');
 
 CREATE TABLE IF NOT EXISTS device_tokens (
     id          UUID PRIMARY KEY DEFAULT gen_random_uuid(),

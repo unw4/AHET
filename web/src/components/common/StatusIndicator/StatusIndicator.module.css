@@ -1,7 +1,7 @@
-// web/src/components/common/StatusIndicator/StatusIndicator.module.css
-// AH@ Web Panel — StatusIndicator styles
-// Authors: MERT EGEMEN ÇAR · MEHMET ALİ KAYIK
-//
-// TODO: Implement this module.
-
-// TODO: Add implementation
+.wrap { display: inline-flex; align-items: center; gap: 6px; }
+.dot { width: 8px; height: 8px; flex-shrink: 0; }
+.online  { background-color: var(--color-success); }
+.offline { background-color: #888; }
+.error   { background-color: var(--color-danger); }
+.syncing { background-color: var(--color-primary); }
+.label { font-family: var(--font-mono); font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; }

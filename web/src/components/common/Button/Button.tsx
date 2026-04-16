@@ -1,16 +1,14 @@
-// web/src/components/common/Button/Button.tsx
-// AH@ Web Panel — Brutalist button with primary/secondary/danger variants
-// Authors: MERT EGEMEN ÇAR · MEHMET ALİ KAYIK
-//
-// TODO: Implement the Button component.
-
 import React from 'react'
+import styles from './Button.module.css'
 
-// TODO: Define props interface
-
-export const Button: React.FC = () => {
-  // TODO: Implement component
-  return <div className="border shadow">{/* Button */}</div>
+interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+  variant?: 'primary' | 'secondary' | 'danger' | 'ghost'
 }
+
+const Button: React.FC<ButtonProps> = ({ variant = 'primary', className = '', children, ...rest }) => (
+  <button className={`${styles.btn} ${styles[variant]} ${className}`} {...rest}>
+    {children}
+  </button>
+)
 
 export default Button

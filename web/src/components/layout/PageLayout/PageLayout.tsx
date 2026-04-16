@@ -1,16 +1,19 @@
-// web/src/components/layout/PageLayout/PageLayout.tsx
-// AH@ Web Panel — Root page layout: Sidebar + TopBar + main content area
-// Authors: MERT EGEMEN ÇAR · MEHMET ALİ KAYIK
-//
-// TODO: Implement the PageLayout component.
-
 import React from 'react'
+import { Outlet } from 'react-router-dom'
+import Sidebar from '../Sidebar/Sidebar'
+import TopBar from '../TopBar/TopBar'
+import styles from './PageLayout.module.css'
 
-// TODO: Define props interface
-
-export const PageLayout: React.FC = () => {
-  // TODO: Implement component
-  return <div className="border shadow">{/* PageLayout */}</div>
-}
+const PageLayout: React.FC = () => (
+  <div className={styles.root}>
+    <Sidebar />
+    <div className={styles.body}>
+      <TopBar />
+      <main className={styles.main}>
+        <Outlet />
+      </main>
+    </div>
+  </div>
+)
 
 export default PageLayout

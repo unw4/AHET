@@ -1,7 +1,8 @@
-// web/src/components/common/Modal/Modal.module.css
-// AH@ Web Panel — Modal styles
-// Authors: MERT EGEMEN ÇAR · MEHMET ALİ KAYIK
-//
-// TODO: Implement this module.
-
-// TODO: Add implementation
+.overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.55); display: flex; align-items: center; justify-content: center; z-index: 100; }
+.modal { background: var(--color-bg); border: var(--border-width) solid var(--color-border); box-shadow: 8px 8px 0px var(--color-secondary); min-width: 420px; max-width: 580px; width: 100%; }
+.header { display: flex; align-items: center; justify-content: space-between; padding: var(--space-4); border-bottom: var(--border-width) solid var(--color-border); background-color: var(--color-secondary); }
+.headerTitle { font-family: var(--font-mono); font-size: var(--text-sm); font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: var(--color-primary); }
+.closeBtn { background: none; border: none; color: var(--color-text-inverse); cursor: pointer; font-size: var(--text-xl); line-height: 1; padding: 0 4px; }
+.closeBtn:hover { color: var(--color-primary); }
+.body { padding: var(--space-5); }
+.footer { padding: var(--space-4); border-top: var(--border-width) solid var(--color-border); display: flex; justify-content: flex-end; gap: var(--space-3); }

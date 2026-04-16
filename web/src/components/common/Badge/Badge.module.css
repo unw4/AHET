@@ -1,7 +1,26 @@
-// web/src/components/common/Badge/Badge.module.css
-// AH@ Web Panel — Badge styles
-// Authors: MERT EGEMEN ÇAR · MEHMET ALİ KAYIK
-//
-// TODO: Implement this module.
-
-// TODO: Add implementation
+.badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 8px;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  border: 1px solid currentColor;
+}
+.todo        { background: var(--color-surface); color: var(--color-text-primary); }
+.in_progress { background: var(--color-primary); color: var(--color-secondary); border-color: var(--color-secondary); }
+.done        { background: var(--color-success); color: #fff; border-color: var(--color-success); }
+.cancelled   { background: #777; color: #fff; border-color: #555; }
+.low         { background: var(--color-surface); color: var(--color-text-primary); }
+.medium      { background: var(--color-primary); color: var(--color-secondary); border-color: var(--color-secondary); }
+.high        { background: #E65C00; color: #fff; border-color: #b34600; }
+.urgent      { background: var(--color-danger); color: #fff; border-color: #900; }
+.critical    { background: var(--color-danger); color: #fff; border-color: #900; }
+.pass        { background: var(--color-success); color: #fff; border-color: var(--color-success); }
+.fail        { background: var(--color-danger); color: #fff; border-color: #900; }
+.incomplete  { background: #888; color: #fff; border-color: #666; }
+.scheduled   { background: var(--color-surface); color: var(--color-text-primary); }
+.overdue     { background: var(--color-danger); color: #fff; border-color: #900; }
+.completed   { background: var(--color-success); color: #fff; border-color: var(--color-success); }

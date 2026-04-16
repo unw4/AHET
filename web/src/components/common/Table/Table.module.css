@@ -1,7 +1,6 @@
-// web/src/components/common/Table/Table.module.css
-// AH@ Web Panel — Table styles
-// Authors: MERT EGEMEN ÇAR · MEHMET ALİ KAYIK
-//
-// TODO: Implement this module.
-
-// TODO: Add implementation
+.wrap { overflow-x: auto; border: var(--border-width) solid var(--color-border); box-shadow: var(--shadow-brutalist); }
+.table { width: 100%; border-collapse: collapse; font-family: var(--font-mono); font-size: var(--text-sm); background: var(--color-bg); }
+.table th { background-color: var(--color-secondary); color: var(--color-text-inverse); font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; font-size: 11px; padding: 10px var(--space-3); text-align: left; border-bottom: var(--border-width) solid var(--color-border); white-space: nowrap; }
+.table td { padding: 10px var(--space-3); border-bottom: 1px solid var(--color-surface); vertical-align: middle; }
+.table tr:last-child td { border-bottom: none; }
+.table tbody tr:hover td { background-color: rgba(255,215,0,0.07); }

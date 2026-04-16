@@ -1,7 +1,65 @@
-// web/src/components/layout/TopBar/TopBar.module.css
-// AH@ Web Panel — TopBar styles
-// Authors: MERT EGEMEN ÇAR · MEHMET ALİ KAYIK
-//
-// TODO: Implement this module.
-
-// TODO: Add implementation
+.topbar {
+  height: 56px;
+  background-color: var(--color-bg);
+  border-bottom: var(--border-width) solid var(--color-border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 var(--space-6);
+  flex-shrink: 0;
+}
+.title {
+  font-family: var(--font-mono);
+  font-size: var(--text-sm);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+.actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+.notifBtn {
+  position: relative;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: var(--border-width) solid var(--color-border);
+  background: none;
+  cursor: pointer;
+  box-shadow: var(--shadow-brutalist);
+  transition: background 80ms;
+}
+.notifBtn:hover { background-color: var(--color-secondary); color: var(--color-primary); }
+.notifBadge {
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  width: 16px;
+  height: 16px;
+  background-color: var(--color-danger);
+  color: #fff;
+  font-family: var(--font-mono);
+  font-size: 9px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.logoutBtn {
+  padding: 6px var(--space-3);
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  background: none;
+  border: var(--border-width) solid var(--color-border);
+  cursor: pointer;
+  box-shadow: var(--shadow-brutalist);
+  transition: background 80ms, color 80ms;
+}
+.logoutBtn:hover { background-color: var(--color-secondary); color: var(--color-primary); }

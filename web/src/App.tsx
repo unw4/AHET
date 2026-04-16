@@ -1,16 +1,7 @@
-// web/src/App.tsx
-// AH@ Web Panel — Root component: React Query provider + Router + auth guard
-// Authors: MERT EGEMEN ÇAR · MEHMET ALİ KAYIK
-//
-// TODO: Implement the App component.
-
 import React from 'react'
+import { RouterProvider } from 'react-router-dom'
+import { router } from './router'
 
-// TODO: Define props interface
-
-export const App: React.FC = () => {
-  // TODO: Implement component
-  return <div className="border shadow">{/* App */}</div>
-}
+const App: React.FC = () => <RouterProvider router={router} />
 
 export default App
